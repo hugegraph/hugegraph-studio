@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="FATAL" monitorInterval="30">
+    <Properties>
+        <Property name="studio.log.dir">./logs</Property>
+        <Property name="studio.log.file">studio.log</Property>
+        <Property name="studio.max.log.file.size">250 MB</Property>
+        <Property name="studio.max.log.archives">10</Property>
+    </Properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} ID: %X{reqId} TS: %X{reqTs}- %message%n"/>
+        </Console>
+        <RollingFile name="rollingfile"
+                     fileName="${sys:studio.log.dir}/${sys:studio.log.file}"
+                     filePattern="${sys:studio.log.dir}/$${date:yyyy-MM}/${sys:studio.log.file}-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} ID:
+                         %X{reqId} TS: %X{reqTs}- %message%n
+                </Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="${sys:studio.max.log.file.size}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${sys:studio.max.log.archives}"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="debug" additivity="false">
+            <AppenderRef ref="console"/>
+        </Root>
+    </Loggers>
+</Configuration>
