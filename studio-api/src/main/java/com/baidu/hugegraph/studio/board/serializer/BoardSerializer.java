@@ -64,7 +64,7 @@ public class BoardSerializer {
         filePath = configuration.getBoardFilePath();
         Preconditions.checkNotNull(filePath);
 
-        LOG.info("The board file path is: {}", filePath);
+        LOG.debug("The board file path is: {}", filePath);
         File file = new File(filePath);
         if (!file.exists()) {
             try {
@@ -98,7 +98,7 @@ public class BoardSerializer {
                                .getBytes(Charsets.UTF_8);
             out.writeInt(all.length);
             out.write(all);
-            LOG.info("Write board file: {}", filePath);
+            LOG.debug("Write board file: {}", filePath);
         } catch (IOException e) {
             LOG.error("Failed to write board file: {}", filePath, e);
             throw new RuntimeException(String.format(
@@ -117,7 +117,7 @@ public class BoardSerializer {
              DataInputStream input = new DataInputStream(is)) {
             int len = input.readInt();
             byte[] bytes = new byte[len];
-            LOG.info("Read total data: {} bytes", len);
+            LOG.debug("Read total data: {} bytes", len);
             input.readFully(bytes);
             return mapper.readValue(bytes, Board.class);
         } catch (IOException e) {
