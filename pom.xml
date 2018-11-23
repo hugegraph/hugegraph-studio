@@ -7,7 +7,7 @@
     <groupId>com.baidu.hugegraph</groupId>
     <artifactId>hugegraph-studio</artifactId>
     <packaging>pom</packaging>
-    <version>0.7.0</version>
+    <version>0.8.0</version>
     <modules>
         <module>studio-api</module>
         <module>studio-dist</module>
@@ -36,7 +36,7 @@
             <dependency>
                 <groupId>com.baidu.hugegraph</groupId>
                 <artifactId>hugegraph-client</artifactId>
-                <version>1.5.8</version>
+                <version>1.6.4</version>
             </dependency>
 
             <dependency>
