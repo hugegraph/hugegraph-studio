@@ -46,6 +46,8 @@ public class Card {
      * Instantiates a new board card.
      */
     public Card() {
+        this.id = "card_default";
+        this.code = "";
     }
 
     /**

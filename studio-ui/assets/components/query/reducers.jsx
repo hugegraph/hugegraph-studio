@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { UPDATE_CARD } from './actions';
+import {UPDATE_CARD} from './actions';
 
 export function queryPanel(state = {}, action) {
     switch (action.type) {
