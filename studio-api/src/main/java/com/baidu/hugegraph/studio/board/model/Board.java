@@ -33,11 +33,11 @@ public class Board {
 
     @JsonProperty("createTime")
     private Long createTime;
-
     @JsonProperty("updateTime")
     private Long updateTime;
-
+    @JsonProperty("card")
     private Card card;
+    @JsonProperty("result")
     private QueryResult result;
 
     /**
@@ -45,6 +45,9 @@ public class Board {
      */
     public Board() {
         this.createTime = Instant.now().getEpochSecond();
+        this.updateTime = this.createTime;
+        this.card = new Card();
+        this.result = null;
     }
 
     public Long getCreateTime() {

@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import {alertMessage} from '../common/actions';
-import {changeHeadMode} from '../actions';
+import {alertMessage, checkStatus, parseJSON} from '../common/actions';
 import {HTTPSTATUS} from '../httpstatus';
 
 export const UPDATE_CARD = 'update_card';
@@ -35,8 +34,26 @@ export function changeCardView(data) {
     };
 }
 
-export function execute(card) {
+export function loadCard() {
+    let url = '/api/v1/board';
+    return dispatch => {
+        return fetch(url)
+            .then(checkStatus)
+            .then(parseJSON)
+            .then(data => {
+                let newCard = {
+                    id: data.card.id,
+                    code: data.card.code
+                };
+                dispatch(changeCardView(newCard));
+            })
+            .catch(err => {
+                dispatch(alertMessage('Load Board Fetch Exception:' + err, 'danger'));
+            });
+    };
+}
 
+export function execute(card) {
     return dispatch => {
         let responseStatus = {
             status: 200,

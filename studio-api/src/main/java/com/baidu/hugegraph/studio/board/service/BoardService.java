@@ -19,37 +19,6 @@
 
 package com.baidu.hugegraph.studio.board.service;
 
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type;
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.EDGE;
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.EMPTY;
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.OTHER;
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.PATH;
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.SINGLE;
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.VERTEX;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.baidu.hugegraph.driver.GremlinManager;
 import com.baidu.hugegraph.driver.HugeClient;
 import com.baidu.hugegraph.driver.SchemaManager;
@@ -72,6 +41,36 @@ import com.baidu.hugegraph.util.Log;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type;
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.EDGE;
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.EMPTY;
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.OTHER;
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.PATH;
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.SINGLE;
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.VERTEX;
 
 /**
  * Board service for Jersey Restful Api
@@ -96,6 +95,13 @@ public class BoardService {
     private HugeClient newHugeClient() {
         return new HugeClient(conf.getGraphServerUrl(), conf.getGraphName(),
                               conf.getClientTimeout());
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getBoard() {
+        Board board = this.boardSerializer.load();
+        return Response.status(200).entity(board).build();
     }
 
     /**

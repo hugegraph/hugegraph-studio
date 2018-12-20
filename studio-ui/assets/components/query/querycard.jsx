@@ -23,7 +23,7 @@ import ChangeButton from '../commoncomponents/changebutton';
 import CardEditor from "./cardeditor";
 import QueryResult from "./queryresult";
 import CardFooter from "./cardfooter";
-import {updateCard, changeCardView, execute} from './actions';
+import {changeCardView, execute, loadCard} from './actions';
 
 const initPanelHeight = 1;
 const initCardContentHeight = 200;
@@ -45,6 +45,10 @@ class QueryCard extends React.Component {
 
     constructor() {
         super();
+    }
+
+    componentDidMount() {
+        this.props.loadCard();
     }
 
     componentWillUnmount() {
@@ -225,7 +229,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         updateCard: (card) => dispatch(changeCardView(card)),
-        execute: (card) => dispatch(execute(card))
+        execute: (card) => dispatch(execute(card)),
+        loadCard: () => dispatch(loadCard())
     };
 }
 

@@ -19,6 +19,16 @@
 
 package com.baidu.hugegraph.studio.board.serializer;
 
+import com.baidu.hugegraph.studio.board.model.Board;
+import com.baidu.hugegraph.studio.config.StudioApiConfig;
+import com.baidu.hugegraph.util.E;
+import com.baidu.hugegraph.util.Log;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
+import org.slf4j.Logger;
+import org.springframework.stereotype.Repository;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -31,16 +41,6 @@ import java.time.Instant;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import org.slf4j.Logger;
-import org.springframework.stereotype.Repository;
-
-import com.baidu.hugegraph.studio.board.model.Board;
-import com.baidu.hugegraph.studio.config.StudioApiConfig;
-import com.baidu.hugegraph.util.Log;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Charsets;
-import com.google.common.base.Preconditions;
 
 @Repository("boardSerializer")
 public class BoardSerializer {
@@ -61,9 +61,22 @@ public class BoardSerializer {
 
     private void initBoardRepository() {
         configuration = StudioApiConfig.getInstance();
-        filePath = configuration.getBoardFilePath();
-        Preconditions.checkNotNull(filePath);
+        String baseDir = configuration.getBaseDirectory();
+        Preconditions.checkNotNull(baseDir);
+        LOG.debug("The base directory is: {}", baseDir);
+        File dir = new File(baseDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        E.checkArgument(dir.exists() && dir.isDirectory(),
+                        "Please ensure the directory '%s' exist",
+                        baseDir);
 
+        filePath = configuration.getBoardFilePath();
+    }
+
+    private void ensureFileExist() {
+        Preconditions.checkNotNull(filePath);
         LOG.debug("The board file path is: {}", filePath);
         File file = new File(filePath);
         if (!file.exists()) {
@@ -76,7 +89,9 @@ public class BoardSerializer {
                           filePath), e);
             }
         }
-        Preconditions.checkArgument(file.exists() && file.isFile());
+        E.checkArgument(file.exists() && file.isFile(),
+                        "Please ensure the board file '%s' exist",
+                        filePath);
     }
 
     /**
@@ -85,6 +100,8 @@ public class BoardSerializer {
     // TODO: Support append and serialize in bytes
     public void save(Board board) {
         Preconditions.checkNotNull(board);
+
+        ensureFileExist();
         board.setUpdateTime(Instant.now().getEpochSecond());
 
         /*
@@ -112,6 +129,10 @@ public class BoardSerializer {
      * Read board entity from disk.
      */
     public Board load() {
+        File file = new File(filePath);
+        if (!file.exists() || file.length() == 0L) {
+            return new Board();
+        }
         readLock.lock();
         try (InputStream is = new FileInputStream(filePath);
              DataInputStream input = new DataInputStream(is)) {
