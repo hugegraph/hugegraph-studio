@@ -94,7 +94,8 @@ public class BoardService {
     private GremlinOptimizer gremlinOptimizer;
 
     private HugeClient newHugeClient() {
-        return new HugeClient(conf.getGraphServerUrl(), conf.getGraphName());
+        return new HugeClient(conf.getGraphServerUrl(), conf.getGraphName(),
+                              conf.getClientTimeout());
     }
 
     /**

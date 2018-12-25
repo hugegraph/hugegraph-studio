@@ -79,6 +79,14 @@ public class StudioApiOptions extends OptionHolder {
                     "hugegraph"
             );
 
+    public static final ConfigOption<Integer> CLIENT_TIMEOUT =
+            new ConfigOption<>(
+                    "client.timeout",
+                    "The timeout of hugegraph client in seconds",
+                    positiveInt(),
+                    30
+            );
+
     /**
      * The constant DATA_BASE_DIR.
      */

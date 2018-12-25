@@ -19,19 +19,18 @@
 
 package com.baidu.hugegraph.studio.config;
 
+import com.baidu.hugegraph.config.HugeConfig;
+import com.baidu.hugegraph.config.OptionSpace;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.baidu.hugegraph.config.HugeConfig;
-import com.baidu.hugegraph.config.OptionSpace;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
 
 public class StudioApiConfig {
 
@@ -84,6 +83,10 @@ public class StudioApiConfig {
 
     public String getGraphName() {
         return this.config.get(StudioApiOptions.GRAPH_NAME);
+    }
+
+    public int getClientTimeout() {
+        return this.config.get(StudioApiOptions.CLIENT_TIMEOUT);
     }
 
     public String getBoardFilePath() {
