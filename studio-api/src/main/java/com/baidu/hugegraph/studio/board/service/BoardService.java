@@ -323,8 +323,8 @@ public class BoardService {
         List<Edge> edges = queryResult.getGraph().getEdges();
         vertices.forEach(v -> vertexIds.add(v.id()));
         edges.forEach(e -> {
-            if (e.source().equals(transformedVertexId) ||
-                e.target().equals(transformedVertexId)) {
+            if (e.sourceId().equals(transformedVertexId) ||
+                e.targetId().equals(transformedVertexId)) {
                 visitedEdgeIds.add(e.id());
             }
         });
@@ -513,8 +513,8 @@ public class BoardService {
         }
         Set<Object> vertexIds = new HashSet<>();
         edges.forEach(e -> {
-            vertexIds.add(e.source());
-            vertexIds.add(e.target());
+            vertexIds.add(e.sourceId());
+            vertexIds.add(e.targetId());
         });
         return getVertices(client, new ArrayList<>(vertexIds));
 
@@ -561,8 +561,8 @@ public class BoardService {
                          * vertexIds. Hence, just reserve the edge which that
                          * the target in the set of vertexIds.
                          */
-                        Object target = edge.target();
-                        Object source = edge.source();
+                        Object target = edge.targetId();
+                        Object source = edge.sourceId();
                         if (vertexIds.contains(target) &&
                             vertexIds.contains(source)) {
                             Integer count = edgesNumPerVertex.get(source);
@@ -634,8 +634,8 @@ public class BoardService {
                 vertexIds.add(vertex.id());
             } else if (obj instanceof Edge) {
                 Edge edge = (Edge) obj;
-                vertexIds.add(edge.source());
-                vertexIds.add(edge.target());
+                vertexIds.add(edge.sourceId());
+                vertexIds.add(edge.targetId());
             }
         }));
         return getVertices(client, new ArrayList<>(vertexIds));

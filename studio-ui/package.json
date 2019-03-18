@@ -40,7 +40,7 @@
     "style-loader": "^0.18.1",
     "url-loader": "^0.5.8",
     "webpack": "^2.6.0",
-    "webpack-dev-server": "^2.5.1",
+    "webpack-dev-server": "^3.1.11",
     "whatwg-fetch": "^2.0.3"
   },
   "dependencies": {
