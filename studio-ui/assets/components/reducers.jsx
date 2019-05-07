@@ -32,7 +32,7 @@ const initialState = {
     },
     queryPanel: {
         card: {
-            "id":"card_1",
+            "id": "card_default",
             "language": "gremlin",
             "code": "",
             "cardConfig": {
