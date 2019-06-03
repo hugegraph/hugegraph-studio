@@ -96,7 +96,7 @@ public class StudioApiConfig {
     public String getBaseDirectory() {
         String userDataDir = this.config.get(StudioApiOptions.DATA_BASE_DIR);
         if (StringUtils.isBlank(userDataDir)) {
-            userDataDir = "~/.hugegraph-studio";
+            userDataDir = ".hugegraph-studio";
         }
         return replaceHomeDirReferences(userDataDir);
     }
