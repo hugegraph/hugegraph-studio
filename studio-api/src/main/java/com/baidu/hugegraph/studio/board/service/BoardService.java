@@ -292,7 +292,7 @@ public class BoardService {
             client = HugeClientWrapper.get(conf);
         } catch (Exception e) {
             QueryResult result = new QueryResult();
-            result.setMessage("Failed to connect HugeGraphServer" + e);
+            result.setMessage("Failed to connect HugeGraphServer：" + e);
             return Response.status(500).entity(result).build();
         }
 
