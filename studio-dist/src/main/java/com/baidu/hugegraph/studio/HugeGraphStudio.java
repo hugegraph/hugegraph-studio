@@ -61,6 +61,16 @@ public class HugeGraphStudio {
     public static void main(String[] args) throws Exception {
         StudioServerConfig config = new StudioServerConfig(DEFAULT_CONFIG_FILE);
         run(config);
+        // Add shutdown hook to close studio server
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                if (server != null) {
+                    server.stop();
+                }
+            } catch (Exception e) {
+                LOG.warn("Failed to stop studio server", e);
+            }
+        }));
         server.await();
     }
 

@@ -19,6 +19,39 @@
 
 package com.baidu.hugegraph.studio.board.service;
 
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type;
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.EDGE;
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.EMPTY;
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.OTHER;
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.PATH;
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.SINGLE;
+import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.VERTEX;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.baidu.hugegraph.driver.GremlinManager;
 import com.baidu.hugegraph.driver.HugeClient;
 import com.baidu.hugegraph.driver.SchemaManager;
@@ -27,6 +60,7 @@ import com.baidu.hugegraph.structure.graph.Vertex;
 import com.baidu.hugegraph.structure.gremlin.Result;
 import com.baidu.hugegraph.structure.gremlin.ResultSet;
 import com.baidu.hugegraph.structure.schema.VertexLabel;
+import com.baidu.hugegraph.studio.board.HugeClientWrapper;
 import com.baidu.hugegraph.studio.board.model.Board;
 import com.baidu.hugegraph.studio.board.model.Card;
 import com.baidu.hugegraph.studio.board.model.QueryResult;
@@ -41,36 +75,6 @@ import com.baidu.hugegraph.util.Log;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type;
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.EDGE;
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.EMPTY;
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.OTHER;
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.PATH;
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.SINGLE;
-import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.VERTEX;
 
 /**
  * Board service for Jersey Restful Api
@@ -86,16 +90,26 @@ public class BoardService {
     private static final int MAX_EDGES_PER_VERTEX = 200;
     private static final StudioApiConfig conf = StudioApiConfig.getInstance();
 
+    private static volatile HugeClient client = null;
+
+    static {
+        // Add shutdown hook to close client
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                if (client != null) {
+                    client.close();
+                }
+            } catch (Exception e) {
+                LOG.warn("Failed to close client", e);
+            }
+        }));
+    }
+
     @Autowired
     private BoardSerializer boardSerializer;
     
     @Autowired
     private GremlinOptimizer gremlinOptimizer;
-
-    private HugeClient newHugeClient() {
-        return new HugeClient(conf.getGraphServerUrl(), conf.getGraphName(),
-                              conf.getClientTimeout());
-    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -121,12 +135,12 @@ public class BoardService {
     public Response executeGremlin(Card card) {
         Preconditions.checkArgument(card != null);
 
-        HugeClient client = null;
+        HugeClient client;
         try {
-            client = newHugeClient();
+            client = HugeClientWrapper.get(conf);
         } catch (Exception e) {
             QueryResult result = new QueryResult();
-            result.setMessage("Failed to connect HugeGraphServer");
+            result.setMessage("Failed to connect HugeGraphServer: " + e);
             return Response.status(500).entity(result).build();
         }
 
@@ -273,12 +287,12 @@ public class BoardService {
         Preconditions.checkArgument(StringUtils.isNotBlank(label),
                                     "parameter label is blank");
 
-        HugeClient client = null;
+        HugeClient client;
         try {
-            client = newHugeClient();
+            client = HugeClientWrapper.get(conf);
         } catch (Exception e) {
             QueryResult result = new QueryResult();
-            result.setMessage("Failed to connect HugeGraphServer");
+            result.setMessage("Failed to connect HugeGraphServer：" + e);
             return Response.status(500).entity(result).build();
         }
 

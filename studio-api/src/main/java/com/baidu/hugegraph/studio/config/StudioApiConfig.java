@@ -19,12 +19,6 @@
 
 package com.baidu.hugegraph.studio.config;
 
-import com.baidu.hugegraph.config.HugeConfig;
-import com.baidu.hugegraph.config.OptionSpace;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
@@ -32,10 +26,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.baidu.hugegraph.config.HugeConfig;
+import com.baidu.hugegraph.config.OptionSpace;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
+
 public class StudioApiConfig {
 
     private static final String DEFAULT_CONFIGURATION_FILE =
             "hugegraph-studio.properties";
+    private static final String DEFAULT_DATA_DIR = ".hugegraph-studio";
+
     private final ObjectMapper mapper = new ObjectMapper();
 
     private HugeConfig config;
@@ -96,7 +99,7 @@ public class StudioApiConfig {
     public String getBaseDirectory() {
         String userDataDir = this.config.get(StudioApiOptions.DATA_BASE_DIR);
         if (StringUtils.isBlank(userDataDir)) {
-            userDataDir = "~/.hugegraph-studio";
+            userDataDir = DEFAULT_DATA_DIR;
         }
         return replaceHomeDirReferences(userDataDir);
     }
