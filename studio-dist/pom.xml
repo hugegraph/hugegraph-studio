@@ -50,105 +50,107 @@
     </dependencies>
 
     <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>install-studio</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <attach>false</attach>
-                            <outputDirectory>${top.level.basedir}
-                            </outputDirectory>
-                            <finalName>${final.name}</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptor>
-                                ${assembly.descriptor.dir}/assembly.xml
-                            </descriptor>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${top.level.basedir}</directory>
-                            <includes>
-                                <include>*.tar.gz</include>
-                                <include>${final.name}/**</include>
-                            </includes>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
-                        <fileset>
-                            <directory>${final.name}</directory>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <echo file="${top.level.basedir}/dist.sh">
-                                    cd ${studio-ui.dir}
-                                    npm install &amp;&amp; npm run build || exit 1
-                                    rm -f ${top.level.basedir}/dist.sh
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.4</version>
+                    <executions>
+                        <execution>
+                            <id>install-studio</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                            <configuration>
+                                <attach>false</attach>
+                                <outputDirectory>${top.level.basedir}
+                                </outputDirectory>
+                                <finalName>${final.name}</finalName>
+                                <appendAssemblyId>false</appendAssemblyId>
+                                <descriptor>
+                                    ${assembly.descriptor.dir}/assembly.xml
+                                </descriptor>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <configuration>
+                        <filesets>
+                            <fileset>
+                                <directory>${top.level.basedir}</directory>
+                                <includes>
+                                    <include>*.tar.gz</include>
+                                    <include>${final.name}/**</include>
+                                </includes>
+                                <followSymlinks>false</followSymlinks>
+                            </fileset>
+                            <fileset>
+                                <directory>${final.name}</directory>
+                            </fileset>
+                        </filesets>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <tasks>
+                                    <echo file="${top.level.basedir}/dist.sh">
+                                        cd ${studio-ui.dir}
+                                        npm install &amp;&amp; npm run build || exit 1
+                                        rm -f ${top.level.basedir}/dist.sh
 
-                                    rm -rf \
-                                    ${top.level.basedir}/${final.name}/ui/*
+                                        rm -rf \
+                                        ${top.level.basedir}/${final.name}/ui/*
 
-                                    cp -r \
-                                    ${top.level.basedir}/studio-ui/assets/images \
-                                    ${top.level.basedir}/studio-ui/dist
+                                        cp -r \
+                                        ${top.level.basedir}/studio-ui/assets/images \
+                                        ${top.level.basedir}/studio-ui/dist
 
-                                    cp -r \
-                                    ${top.level.basedir}/studio-ui/assets/vendors \
-                                    ${top.level.basedir}/studio-ui/dist
+                                        cp -r \
+                                        ${top.level.basedir}/studio-ui/assets/vendors \
+                                        ${top.level.basedir}/studio-ui/dist
 
-                                    cp -r \
-                                    ${top.level.basedir}/studio-ui/dist \
-                                    ${top.level.basedir}/${final.name}/ui
+                                        cp -r \
+                                        ${top.level.basedir}/studio-ui/dist \
+                                        ${top.level.basedir}/${final.name}/ui
 
-                                    echo
-                                    echo "Build studio ok."
-                                    echo
+                                        echo
+                                        echo "Build studio ok."
+                                        echo
 
-                                    cd ..
-                                    tar -zcvf \
-                                    ${top.level.basedir}/${final.name}.tar.gz \
-                                    ${final.name} || exit 1
-                                    rm -f ${top.level.basedir}/dist.sh
-                                    echo
-                                    echo "hugegraph-studio dist tar.gz available at:
-                                    ${top.level.basedir}/${final.name}.tar.gz"
-                                    echo
-                                </echo>
-                                <exec executable="${shell-executable}"
-                                      dir="${top.level.basedir}"
-                                      failonerror="true">
-                                    <arg line="./dist.sh"/>
-                                </exec>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
+                                        cd ..
+                                        tar -zcvf \
+                                        ${top.level.basedir}/${final.name}.tar.gz \
+                                        ${final.name} || exit 1
+                                        rm -f ${top.level.basedir}/dist.sh
+                                        echo
+                                        echo "hugegraph-studio dist tar.gz available at:
+                                        ${top.level.basedir}/${final.name}.tar.gz"
+                                        echo
+                                    </echo>
+                                    <exec executable="${shell-executable}"
+                                          dir="${top.level.basedir}"
+                                          failonerror="true">
+                                        <arg line="./dist.sh"/>
+                                    </exec>
+                                </tasks>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
 </project>
