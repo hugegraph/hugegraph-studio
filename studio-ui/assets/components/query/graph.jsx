@@ -173,7 +173,7 @@ class Graph extends React.Component {
             physics: {
                 maxVelocity: 50,
                 solver: 'barnesHut',
-                timestep: 0.5,
+                timestep: 0.3,
                 stabilization: {iterations: 150}
             }
         };
