@@ -27,7 +27,6 @@ import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.PATH;
 import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.SINGLE;
 import static com.baidu.hugegraph.studio.board.model.QueryResult.Type.VERTEX;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -72,6 +71,9 @@ import com.baidu.hugegraph.studio.config.NodeColorOption;
 import com.baidu.hugegraph.studio.config.StudioApiConfig;
 import com.baidu.hugegraph.studio.gremlin.GremlinOptimizer;
 import com.baidu.hugegraph.util.Log;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -89,10 +91,15 @@ public class BoardService {
     // Vis can deal with about 200 edges.
     private static final int MAX_EDGES_PER_VERTEX = 200;
     private static final StudioApiConfig conf = StudioApiConfig.getInstance();
-
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static volatile HugeClient client = null;
 
     static {
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
+        simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
+        MAPPER.registerModule(simpleModule);
+
         // Add shutdown hook to close client
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -152,7 +159,9 @@ public class BoardService {
             board.setResult(queryResult);
             boardSerializer.save(board);
 
-            return Response.status(200).entity(queryResult).build();
+            return Response.status(200)
+                           .entity(MAPPER.writeValueAsString(queryResult))
+                           .build();
         } catch (Exception e) {
             QueryResult result = new QueryResult();
             result.setMessage(e.getMessage());
@@ -304,7 +313,9 @@ public class BoardService {
                                                                vertexId, label);
             boardSerializer.save(board);
 
-            return Response.status(200).entity(resultNew).build();
+            return Response.status(200)
+                           .entity(MAPPER.writeValueAsString(resultNew))
+                           .build();
         } catch (Exception e) {
             QueryResult result = new QueryResult();
             result.setMessage(e.getMessage());

@@ -178,7 +178,6 @@ public class QueryResult {
         this.graph.setEdges(edges);
     }
 
-
     public void setStyles(Map<String, Object> styles) {
         this.graph.setStyles(styles);
     }

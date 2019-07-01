@@ -47,7 +47,7 @@ public class BoardSerializer {
 
     private static final Logger LOG = Log.logger(BoardSerializer.class);
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
     private StudioApiConfig configuration;
     private String filePath;
 
