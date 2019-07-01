@@ -19,16 +19,6 @@
 
 package com.baidu.hugegraph.studio.board.serializer;
 
-import com.baidu.hugegraph.studio.board.model.Board;
-import com.baidu.hugegraph.studio.config.StudioApiConfig;
-import com.baidu.hugegraph.util.E;
-import com.baidu.hugegraph.util.Log;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Charsets;
-import com.google.common.base.Preconditions;
-import org.slf4j.Logger;
-import org.springframework.stereotype.Repository;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -42,12 +32,23 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.slf4j.Logger;
+import org.springframework.stereotype.Repository;
+
+import com.baidu.hugegraph.studio.board.model.Board;
+import com.baidu.hugegraph.studio.config.StudioApiConfig;
+import com.baidu.hugegraph.util.E;
+import com.baidu.hugegraph.util.Log;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
+
 @Repository("boardSerializer")
 public class BoardSerializer {
 
     private static final Logger LOG = Log.logger(BoardSerializer.class);
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private StudioApiConfig configuration;
     private String filePath;
 
@@ -111,7 +112,7 @@ public class BoardSerializer {
         writeLock.lock();
         try (OutputStream os = new FileOutputStream(filePath);
              DataOutputStream out = new DataOutputStream(os)) {
-            byte[] all = mapper.writeValueAsString(board)
+            byte[] all = MAPPER.writeValueAsString(board)
                                .getBytes(Charsets.UTF_8);
             out.writeInt(all.length);
             out.write(all);
@@ -140,7 +141,7 @@ public class BoardSerializer {
             byte[] bytes = new byte[len];
             LOG.debug("Read total data: {} bytes", len);
             input.readFully(bytes);
-            return mapper.readValue(bytes, Board.class);
+            return MAPPER.readValue(bytes, Board.class);
         } catch (IOException e) {
             throw new RuntimeException(String.format(
                       "Failed to read File: '%s'", filePath), e);
