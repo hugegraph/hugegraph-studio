@@ -137,7 +137,6 @@ public class StudioApiOptions extends OptionHolder {
     public static final ConfigListOption<String> GREMLINS_APPEND_LIMIT_SUFFIX =
             new ConfigListOption<>(
                     "gremlin.limit_suffix",
-                    false,
                     "The suffixes of gremlin statement which should be " +
                     "appended limit()",
                     disallowEmpty(),
