@@ -22,7 +22,7 @@ import {connect} from 'react-redux';
 import {alertMessage} from '../common/actions';
 
 import { LOADING_ID_SUFFIX } from './querycard';
-
+import * as ReactDOM from "react-dom";
 
 class Graph extends React.Component {
 
@@ -49,9 +49,12 @@ class Graph extends React.Component {
 
     render() {
         return (
-            <div style={{height: this.props.height}}
-                 id={this.props.id}
-                 ref={el => this.graph = el}>
+            <div>
+                <div id='header'/>
+                <div style={{height: this.props.height}}
+                     id={this.props.id}
+                     ref={el => this.graph = el}>
+                </div>
             </div>
         );
     }
@@ -84,6 +87,7 @@ class Graph extends React.Component {
         this.state.graphNodes = new vis.DataSet();
         this.state.graphEdges = new vis.DataSet();
 
+        const drawLabels = new Set();
         if (vertices !== null) {
             vertices.forEach(vertex => {
                 let title =
@@ -104,6 +108,7 @@ class Graph extends React.Component {
                     propertiesLabel: vertex.label,
                     group: vertex.label
                 }]);
+                drawLabels.add(vertex.label);
             });
         }
 
@@ -131,13 +136,35 @@ class Graph extends React.Component {
             });
         }
 
-        var container = document.getElementById(this.props.id);
-        var data = {
+        // collect legends
+        const legends = new Map();
+        if (styles.groups !== null) {
+            for (const key in styles.groups) {
+                legends.set(key, styles.groups[key].color.background);
+            }
+        }
+        const headerLegends = [...drawLabels].map(label => {
+            const background = legends.get(label);
+            const style = {
+                display: 'inline-block',
+                fontSize: '14px',
+                margin: '2px 4px',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                color: '#FFF',
+                background: background
+            };
+            return (<div style={style} key={label}>{label}</div>)
+        });
+        const header = document.getElementById('header');
+        ReactDOM.render(<div>{headerLegends}</div>, header);
+
+        const container = document.getElementById(this.props.id);
+        const data = {
             nodes: this.state.graphNodes,
             edges: this.state.graphEdges,
         };
-
-        var options = {
+        const options = {
             groups: styles.groups,
             autoResize: true,
             width: '100%',
@@ -177,16 +204,15 @@ class Graph extends React.Component {
                 stabilization: {iterations: 150}
             }
         };
-        var network = new vis.Network(container, data, options);
-
+        const network = new vis.Network(container, data, options);
         network.once("stabilizationIterationsDone", this.loadDone);
         network.on("doubleClick", (params) => this.doubleClick(params));
-    }
+    };
 
     loadDone = () => {
         let loadingId = this.props.cardId + LOADING_ID_SUFFIX;
         document.getElementById(loadingId).style.display = 'none';
-    }
+    };
 
     doubleClick = (params) => {
         params.event = "[original event]";
@@ -231,7 +257,7 @@ class Graph extends React.Component {
 
     updateGroups = (groups) => {
         this.state.groups = groups;
-    }
+    };
 
     addNode = (vertices) => {
         try {
@@ -261,7 +287,7 @@ class Graph extends React.Component {
         } catch (err) {
             console.log(err);
         }
-    }
+    };
 
     addEdge = (edges) => {
         try {
@@ -290,7 +316,7 @@ class Graph extends React.Component {
         } catch (err) {
             console.log(err);
         }
-    }
+    };
 
     checkStatus(response) {
         if (response.status >= 200 && response.status < 300) {
