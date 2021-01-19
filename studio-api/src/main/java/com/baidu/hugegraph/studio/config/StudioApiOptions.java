@@ -140,7 +140,6 @@ public class StudioApiOptions extends OptionHolder {
                     "The suffixes of gremlin statement which should be " +
                     "appended limit()",
                     disallowEmpty(),
-                    String.class,
                     ".V()", ".E()"
             );
 
