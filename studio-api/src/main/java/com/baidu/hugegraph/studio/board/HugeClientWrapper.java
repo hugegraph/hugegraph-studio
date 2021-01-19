@@ -20,6 +20,7 @@
 package com.baidu.hugegraph.studio.board;
 
 import com.baidu.hugegraph.driver.HugeClient;
+import com.baidu.hugegraph.driver.HugeClientBuilder;
 import com.baidu.hugegraph.studio.config.StudioApiConfig;
 
 public final class HugeClientWrapper {
@@ -40,7 +41,10 @@ public final class HugeClientWrapper {
     private HugeClientWrapper() {}
 
     private static HugeClient newHugeClient(StudioApiConfig config) {
-        return new HugeClient(config.getGraphServerUrl(), config.getGraphName(),
-                              config.getClientTimeout());
+        HugeClientBuilder builder;
+        builder = new HugeClientBuilder(config.getGraphServerUrl(),
+                                        config.getGraphName());
+        builder.configTimeout(config.getClientTimeout());
+        return builder.build();
     }
 }
